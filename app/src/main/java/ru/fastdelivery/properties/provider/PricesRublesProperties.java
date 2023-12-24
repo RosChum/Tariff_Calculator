@@ -1,6 +1,7 @@
 package ru.fastdelivery.properties.provider;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
  */
 @ConfigurationProperties("cost.rub")
 @Setter
+@Slf4j
 public class PricesRublesProperties implements WeightPriceProvider {
 
     private BigDecimal perKg;
@@ -24,11 +26,13 @@ public class PricesRublesProperties implements WeightPriceProvider {
 
     @Override
     public Price costPerKg() {
+        log.info("Create PricesRublesProperties costPerKg");
         return new Price(perKg, currencyFactory.create("RUB"));
     }
 
     @Override
     public Price minimalPrice() {
+        log.info("Create PricesRublesProperties minimalPrice");
         return new Price(minimal, currencyFactory.create("RUB"));
     }
 }
