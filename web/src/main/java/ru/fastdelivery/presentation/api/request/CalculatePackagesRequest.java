@@ -18,4 +18,5 @@ public record CalculatePackagesRequest(
         @NotNull
         String currencyCode
 ) {
+
 }

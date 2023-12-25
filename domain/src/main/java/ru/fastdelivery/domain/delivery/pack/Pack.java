@@ -21,7 +21,7 @@ public record Pack(Weight weight, Height height, Length length, Width width) {
         if (weight.greaterThan(maxWeight)) {
             throw new IllegalArgumentException("Package can't be more than " + maxWeight);
         }
-        if (height().greaterThan(maxSize) || length.greaterThan(maxSize)|| width().greaterThan(maxSize)) {
+        if (height.greaterThan(maxSize) || length.greaterThan(maxSize)|| width.greaterThan(maxSize)) {
             throw new IllegalArgumentException("Height or length or width package can't be more than " + maxSize);
 
         }

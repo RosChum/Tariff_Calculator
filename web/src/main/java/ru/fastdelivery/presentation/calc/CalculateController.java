@@ -41,8 +41,10 @@ public class CalculateController {
     })
     public CalculatePackagesResponse calculate(
             @Valid @RequestBody CalculatePackagesRequest request) {
+        log.info("CalculatePackagesResponse " + request);
         var packsWeights = request.packages().stream().map(rec -> {
-            return new Pack(new Weight(rec.weight()), new Height(rec.height()), new Length(rec.length()), new Width(rec.width()));
+           return new Pack(new Weight(rec.weight()), new  Height(rec.height())
+                    , new Length(rec.length()), new Width(rec.width()));
 
         }).collect(Collectors.toList());
 
