@@ -67,9 +67,9 @@ public class CalculateController {
         Price priceByCubicMeter = tariffCalculateUseCase.calcByCubicMeter(shipment);
         Price priceByWeight = tariffCalculateUseCase.calcByWeight(shipment);
 
-        log.info(" getResulPrice " + " priceByCubicMeter " + priceByCubicMeter.amount() + " priceByWeight " + priceByWeight.amount());
+        log.info(" getResulPrice " + " priceByCubicMeter " + priceByCubicMeter.amount() + " priceByWeight " + priceByWeight.amount() + " compareTo " + priceByCubicMeter.amount().compareTo(priceByWeight.amount()));
 
-        return priceByCubicMeter.amount().compareTo(priceByWeight.amount()) < 0 ? priceByWeight : priceByCubicMeter;
+        return priceByCubicMeter.amount().compareTo(priceByWeight.amount()) > 0 ? priceByCubicMeter : priceByWeight;
 
 
     }
