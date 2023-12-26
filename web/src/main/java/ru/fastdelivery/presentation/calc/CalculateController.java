@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
 import ru.fastdelivery.domain.common.height.Height;
 import ru.fastdelivery.domain.common.length.Length;
+import ru.fastdelivery.domain.common.price.Price;
 import ru.fastdelivery.domain.common.weight.Weight;
 import ru.fastdelivery.domain.common.width.Width;
 import ru.fastdelivery.domain.delivery.pack.Pack;
@@ -43,7 +44,7 @@ public class CalculateController {
             @Valid @RequestBody CalculatePackagesRequest request) {
         log.info("CalculatePackagesResponse " + request);
         var packsWeights = request.packages().stream().map(rec -> {
-           return new Pack(new Weight(rec.weight()), new  Height(rec.height())
+            return new Pack(new Weight(rec.weight()), new Height(rec.height())
                     , new Length(rec.length()), new Width(rec.width()));
 
         }).collect(Collectors.toList());
@@ -54,15 +55,23 @@ public class CalculateController {
 //                .toList();
 
         var shipment = new Shipment(packsWeights, currencyFactory.create(request.currencyCode()));
-        var calculatedPrice = tariffCalculateUseCase.calc(shipment);
+//        var calculatedPrice = tariffCalculateUseCase.calcByWeight(shipment);
+//
         var minimalPrice = tariffCalculateUseCase.minimalPrice();
 
 
-        log.info("CalculatePackagesResponse  calculate " + request
-                + " packsWeights " + packsWeights + " shipment "
-                + shipment + " calculatedPrice " + calculatedPrice + " minimalPrice " + minimalPrice);
+        return new CalculatePackagesResponse(getResulPrice(shipment), minimalPrice);
+    }
 
-        return new CalculatePackagesResponse(calculatedPrice, minimalPrice);
+    private Price getResulPrice(Shipment shipment) {
+        Price priceByCubicMeter = tariffCalculateUseCase.calcByCubicMeter(shipment);
+        Price priceByWeight = tariffCalculateUseCase.calcByWeight(shipment);
+
+        log.info(" getResulPrice " + " priceByCubicMeter " + priceByCubicMeter.amount() + " priceByWeight " + priceByWeight.amount());
+
+        return priceByCubicMeter.amount().compareTo(priceByWeight.amount()) < 0 ? priceByWeight : priceByCubicMeter;
+
+
     }
 }
 

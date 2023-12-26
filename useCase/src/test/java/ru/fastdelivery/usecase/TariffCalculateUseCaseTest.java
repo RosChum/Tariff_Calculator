@@ -41,7 +41,7 @@ class TariffCalculateUseCaseTest {
                 new CurrencyFactory(code -> true).create("RUB"));
         var expectedPrice = new Price(BigDecimal.valueOf(120), currency);
 
-        var actualPrice = tariffCalculateUseCase.calc(shipment);
+        var actualPrice = tariffCalculateUseCase.calcByWeight(shipment);
 
         assertThat(actualPrice).usingRecursiveComparison()
                 .withComparatorForType(BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)

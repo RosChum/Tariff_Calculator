@@ -35,7 +35,7 @@ class CalculateControllerTest extends ControllerTest {
         var request = new CalculatePackagesRequest(
                 List.of(new CargoPackage(BigInteger.TEN,BigInteger.TEN, BigInteger.TEN, BigInteger.TEN )), "RUB");
         var rub = new CurrencyFactory(code -> true).create("RUB");
-        when(useCase.calc(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
+        when(useCase.calcByWeight(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
         when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(5), rub));
 
         ResponseEntity<CalculatePackagesResponse> response =
