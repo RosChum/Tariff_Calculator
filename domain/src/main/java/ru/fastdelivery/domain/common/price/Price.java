@@ -1,6 +1,5 @@
 package ru.fastdelivery.domain.common.price;
 
-import lombok.extern.slf4j.Slf4j;
 import ru.fastdelivery.domain.common.currency.Currency;
 
 import java.math.BigDecimal;
