@@ -7,19 +7,13 @@ import ru.fastdelivery.domain.common.width.Width;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public record CubicMeterCalculation(Height height, Length length, Width width) {
-    private static final Logger logger = Logger.getAnonymousLogger();
 
     public BigDecimal calculateCubicMeter() {
 
-        BigDecimal result = getAroundValue(length.length()).multiply(getAroundValue(width.width()))
+        return getAroundValue(length.length()).multiply(getAroundValue(width.width()))
                 .multiply(getAroundValue(height.height())).divide(new BigDecimal("1000000000"), 4, RoundingMode.CEILING);
-
-        logger.log(Level.INFO, "length.length()" + length.length() + "width.width()" + width.width() + "height.height()" + height.height() + "result " + result);
-        return result;
 
     }
 

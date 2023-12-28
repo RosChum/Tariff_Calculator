@@ -33,19 +33,27 @@ class TariffCalculateUseCaseTest {
     void whenCalculatePrice_thenSuccess() {
         var minimalPrice = new Price(BigDecimal.TEN, currency);
         var pricePerKg = new Price(BigDecimal.valueOf(100), currency);
+        Price priceCubicMeter = new Price(BigDecimal.valueOf(3000), currency);
 
         when(weightPriceProvider.minimalPrice()).thenReturn(minimalPrice);
         when(weightPriceProvider.costPerKg()).thenReturn(pricePerKg);
+        when(weightPriceProvider.costPerCubicMeter()).thenReturn(priceCubicMeter);
 
-        var shipment = new Shipment(List.of(new Pack(new Weight(BigInteger.valueOf(1200)), new Height(BigInteger.valueOf(120)), new Length(BigInteger.valueOf(120)), new Width(BigInteger.valueOf(120)))),
+        var shipment = new Shipment(List.of(new Pack(new Weight(BigInteger.valueOf(1200)), new Height(BigInteger.valueOf(1200)), new Length(BigInteger.valueOf(1200)), new Width(BigInteger.valueOf(1200)))),
                 new CurrencyFactory(code -> true).create("RUB"));
         var expectedPrice = new Price(BigDecimal.valueOf(120), currency);
 
+        var expectedPrice1 = new Price(BigDecimal.valueOf(5184.0000), currency);
         var actualPrice = tariffCalculateUseCase.calcByWeight(shipment);
+        var actualPrice1 = tariffCalculateUseCase.calcByCubicMeter(shipment);
 
         assertThat(actualPrice).usingRecursiveComparison()
                 .withComparatorForType(BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
                 .isEqualTo(expectedPrice);
+
+        assertThat(actualPrice1).usingRecursiveComparison()
+                .withComparatorForType(BigDecimalComparator.BIG_DECIMAL_COMPARATOR, BigDecimal.class)
+                .isEqualTo(expectedPrice1);
     }
 
     @Test
