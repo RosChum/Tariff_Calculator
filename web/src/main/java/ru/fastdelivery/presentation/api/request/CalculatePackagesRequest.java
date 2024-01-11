@@ -1,6 +1,7 @@
 package ru.fastdelivery.presentation.api.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,9 +18,9 @@ public record CalculatePackagesRequest(
         @Schema(description = "Трехбуквенный код валюты", example = "RUB")
         @NotNull
         String currencyCode,
-        @NotNull
+        @Valid
         Destination destination,
-        @NotNull
+        @Valid
         Departure departure
 
 

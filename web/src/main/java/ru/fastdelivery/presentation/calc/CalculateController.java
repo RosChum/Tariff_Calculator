@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,13 +17,13 @@ import ru.fastdelivery.domain.common.length.Length;
 import ru.fastdelivery.domain.common.price.Price;
 import ru.fastdelivery.domain.common.weight.Weight;
 import ru.fastdelivery.domain.common.width.Width;
+import ru.fastdelivery.domain.delivery.ShippingDistance.Distance;
 import ru.fastdelivery.domain.delivery.pack.Pack;
 import ru.fastdelivery.domain.delivery.shipment.Shipment;
 import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
 import ru.fastdelivery.presentation.api.response.CalculatePackagesResponse;
 import ru.fastdelivery.usecase.TariffCalculateUseCase;
 
-import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,6 +54,10 @@ public class CalculateController {
 //                .map(Weight::new)
 //                .map(Pack::new)
 //                .toList();
+
+        Distance distance = new Distance(request.departure().latitude(), request.departure().longitude(), request.destination().latitude(), request.destination().longitude());
+
+        log.info("Distance  " + distance + "calc - " + distance.getDistanceInKilometers());
 
         var shipment = new Shipment(packsWeights, currencyFactory.create(request.currencyCode()));
 //        var calculatedPrice = tariffCalculateUseCase.calcByWeight(shipment);
