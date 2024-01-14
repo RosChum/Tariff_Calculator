@@ -1,4 +1,4 @@
-package ru.fastdelivery.domain.delivery.ShippingDistance;
+package ru.fastdelivery.domain.delivery.shippingDistance;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.referencing.GeodeticCalculator;
