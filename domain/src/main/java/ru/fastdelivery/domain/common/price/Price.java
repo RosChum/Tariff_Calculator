@@ -8,6 +8,7 @@ import java.math.BigDecimal;
  * @param amount   значение цены
  * @param currency валюта цены
  */
+
 public record Price(
         BigDecimal amount,
         Currency currency) {
@@ -30,5 +31,9 @@ public record Price(
             throw new IllegalArgumentException("Cannot compare Prices in difference Currency!");
         }
         return new Price(this.amount.max(price.amount), this.currency);
+    }
+
+    public Price getNewPrice(BigDecimal value){
+        return new Price(value, this.currency);
     }
 }

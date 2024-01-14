@@ -12,3 +12,6 @@ coordinate-range:
   latitudeMax: 65
   longitudeMin: 30
   longitudeMax: 96
+
+server:
+  port: 8080

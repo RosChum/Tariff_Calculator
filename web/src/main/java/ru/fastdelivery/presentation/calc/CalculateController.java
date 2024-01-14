@@ -24,6 +24,9 @@ import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
 import ru.fastdelivery.presentation.api.response.CalculatePackagesResponse;
 import ru.fastdelivery.usecase.TariffCalculateUseCase;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,36 +50,28 @@ public class CalculateController {
         var packsWeights = request.packages().stream().map(rec -> {
             return new Pack(new Weight(rec.weight()), new Height(rec.height())
                     , new Length(rec.length()), new Width(rec.width()));
-
         }).collect(Collectors.toList());
-
-//                .map(CargoPackage::weight)
-//                .map(Weight::new)
-//                .map(Pack::new)
-//                .toList();
 
         Distance distance = new Distance(request.departure().latitude(), request.departure().longitude(), request.destination().latitude(), request.destination().longitude());
 
-        log.info("Distance  " + distance + "calc - " + distance.getDistanceInKilometers());
-
         var shipment = new Shipment(packsWeights, currencyFactory.create(request.currencyCode()));
-//        var calculatedPrice = tariffCalculateUseCase.calcByWeight(shipment);
-//
+
         var minimalPrice = tariffCalculateUseCase.minimalPrice();
 
-
-        return new CalculatePackagesResponse(getResulPrice(shipment), minimalPrice);
+        return new CalculatePackagesResponse(getResulPrice(shipment, distance), minimalPrice);
     }
 
-    private Price getResulPrice(Shipment shipment) {
+    private Price getResulPrice(Shipment shipment, Distance distance) {
+
         Price priceByCubicMeter = tariffCalculateUseCase.calcByCubicMeter(shipment);
         Price priceByWeight = tariffCalculateUseCase.calcByWeight(shipment);
+        Price basePrice = priceByCubicMeter.amount().compareTo(priceByWeight.amount()) > 0 ? priceByCubicMeter : priceByWeight;
 
-        log.info(" getResulPrice " + " priceByCubicMeter " + priceByCubicMeter.amount() + " priceByWeight " + priceByWeight.amount() + " compareTo " + priceByCubicMeter.amount().compareTo(priceByWeight.amount()));
-
-        return priceByCubicMeter.amount().compareTo(priceByWeight.amount()) > 0 ? priceByCubicMeter : priceByWeight;
-
-
+        if (distance.getDistanceInKilometers().compareTo(new BigDecimal(450)) > 0) {
+            return basePrice.getNewPrice(distance.getDistanceInKilometers().divide(new BigDecimal(450), 2, RoundingMode.CEILING).multiply(basePrice.amount()).setScale(2, RoundingMode.CEILING));
+        } else {
+            return basePrice.getNewPrice(basePrice.amount().setScale(2, RoundingMode.CEILING));
+        }
     }
 }
 
