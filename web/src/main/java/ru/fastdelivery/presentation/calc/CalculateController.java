@@ -54,8 +54,8 @@ public class CalculateController {
 
         var shipment = new Shipment(packsWeights, currencyFactory.create(request.currencyCode()));
         var minimalPrice = tariffCalculateUseCase.minimalPrice();
-        log.info("CalculatePackagesResponse result price - " + CalculateResultPrice.getResulPrice(shipment, distance, tariffCalculateUseCase));
-        return new CalculatePackagesResponse(CalculateResultPrice.getResulPrice(shipment, distance, tariffCalculateUseCase), minimalPrice);
+        log.info("CalculatePackagesResponse result price - " + new  CalculateResultPrice(shipment, distance, tariffCalculateUseCase).getResulPrice());
+        return new CalculatePackagesResponse(new CalculateResultPrice(shipment, distance, tariffCalculateUseCase).getResulPrice(), minimalPrice);
     }
 }
 

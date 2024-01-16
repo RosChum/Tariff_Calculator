@@ -1,15 +1,16 @@
 package ru.fastdelivery.usecase;
 
 import ru.fastdelivery.domain.common.price.Price;
-import ru.fastdelivery.domain.delivery.shippingDistance.Distance;
 import ru.fastdelivery.domain.delivery.shipment.Shipment;
+import ru.fastdelivery.domain.delivery.shippingDistance.Distance;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class CalculateResultPrice {
+public record CalculateResultPrice(Shipment shipment, Distance distance,
+                                   TariffCalculateUseCase tariffCalculateUseCase) {
 
-    public static Price getResulPrice(Shipment shipment, Distance distance, TariffCalculateUseCase tariffCalculateUseCase) {
+    public Price getResulPrice() {
         Price priceByCubicMeter = tariffCalculateUseCase.calcByCubicMeter(shipment);
         Price priceByWeight = tariffCalculateUseCase.calcByWeight(shipment);
         Price basePrice = priceByCubicMeter.amount().compareTo(priceByWeight.amount()) > 0 ? priceByCubicMeter : priceByWeight;

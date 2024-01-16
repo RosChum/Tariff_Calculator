@@ -1,7 +1,10 @@
 package ru.fastdelivery.calc;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +26,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class CalculateControllerTest extends ControllerTest {
@@ -34,10 +37,22 @@ class CalculateControllerTest extends ControllerTest {
     @MockBean
     CurrencyFactory currencyFactory;
 
-    @MockBean
+    @Mock
     Distance distance;
-    @MockBean
+    @Mock
+    CalculateResultPrice calculateResultPrice;
+    @Mock
     Shipment shipment;
+    @Mock
+    Price price;
+
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+        calculateResultPrice = new CalculateResultPrice(shipment, distance, useCase);
+
+    }
 
 
     @Test
@@ -51,10 +66,11 @@ class CalculateControllerTest extends ControllerTest {
         var rub = new CurrencyFactory(code -> true).create("RUB");
         when(useCase.calcByWeight(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
         when(useCase.calcByCubicMeter(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
-        when(distance.getDistanceInKilometers()).thenReturn(BigDecimal.valueOf(1000));
-        when(distance.getDistanceInKilometers().compareTo(BigDecimal.valueOf(450))).thenReturn(1);
-//        when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(5), rub));
-        when(CalculateResultPrice.getResulPrice(shipment, distance, useCase)).thenReturn(new Price(new BigDecimal("10"), rub));
+        when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(5), rub));
+        when(distance.getDistanceInKilometers()).thenReturn(new BigDecimal("1000"));
+        when(price.getNewPrice(any())).thenReturn(new Price(new BigDecimal(10), rub));
+//
+//        when(calculateResultPrice.getResulPrice()).thenReturn( new Price(new BigDecimal(10), rub));
         ResponseEntity<CalculatePackagesResponse> response =
                 restTemplate.postForEntity(baseCalculateApi, request, CalculatePackagesResponse.class);
 
