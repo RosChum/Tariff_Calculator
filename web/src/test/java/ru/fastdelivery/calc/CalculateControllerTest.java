@@ -50,7 +50,7 @@ class CalculateControllerTest extends ControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        calculateResultPrice = new CalculateResultPrice(shipment, distance, useCase);
+//        calculateResultPrice = new CalculateResultPrice(shipment, distance, useCase);
 
     }
 
@@ -64,15 +64,22 @@ class CalculateControllerTest extends ControllerTest {
                 new Departure(new BigDecimal("55.752184"), new BigDecimal("37.608970")));
 
         var rub = new CurrencyFactory(code -> true).create("RUB");
-        when(useCase.calcByWeight(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
-        when(useCase.calcByCubicMeter(any())).thenReturn(new Price(BigDecimal.valueOf(10), rub));
-        when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(5), rub));
+        when(useCase.calcByWeight(any())).thenReturn(new Price(BigDecimal.valueOf(400), rub));
+        when(useCase.calcByCubicMeter(any())).thenReturn(new Price(BigDecimal.valueOf(600), rub));
+        when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(350), rub));
         when(distance.getDistanceInKilometers()).thenReturn(new BigDecimal("1000"));
-        when(price.getNewPrice(any())).thenReturn(new Price(new BigDecimal(10), rub));
-//
-//        when(calculateResultPrice.getResulPrice()).thenReturn( new Price(new BigDecimal(10), rub));
+//        when(price.getNewPrice(any())).thenReturn(new Price(new BigDecimal(10), rub));
+
+        Price resultTest = calculateResultPrice.getResulPrice();
+        System.out.println(resultTest);
+
+        when(calculateResultPrice.getResulPrice()).thenReturn(new Price(new BigDecimal(3000), rub));
+        System.out.println(when(calculateResultPrice.getResulPrice()).thenReturn(new Price(new BigDecimal(10), rub)));
+
+
         ResponseEntity<CalculatePackagesResponse> response =
                 restTemplate.postForEntity(baseCalculateApi, request, CalculatePackagesResponse.class);
+        System.out.println(response.getBody().toString());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -87,4 +94,27 @@ class CalculateControllerTest extends ControllerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+    @Test
+    @DisplayName("Координаты доставки == null -> ответ 400")
+    void whenEmptyDestinationCoordinates_thenReturn400() {
+        CalculatePackagesRequest request = new CalculatePackagesRequest(List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB",
+                null,
+                new Departure(new BigDecimal("55.752184"), new BigDecimal("37.608970")));
+        ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Координаты отправления == null -> ответ 400")
+    void whenEmptyDepartureCoordinates_thenReturn400() {
+        CalculatePackagesRequest request = new CalculatePackagesRequest(List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB",
+                new Destination(new BigDecimal("56.330889"), new BigDecimal("44.002981")),
+                null);
+        ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
 }
