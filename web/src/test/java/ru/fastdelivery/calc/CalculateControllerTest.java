@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import ru.fastdelivery.ControllerTest;
 import ru.fastdelivery.domain.common.currency.CurrencyFactory;
 import ru.fastdelivery.domain.common.price.Price;
-import ru.fastdelivery.domain.delivery.shipment.Shipment;
 import ru.fastdelivery.domain.delivery.shippingDistance.Distance;
 import ru.fastdelivery.presentation.api.request.CalculatePackagesRequest;
 import ru.fastdelivery.presentation.api.request.CargoPackage;
@@ -41,17 +40,10 @@ class CalculateControllerTest extends ControllerTest {
     Distance distance;
     @Mock
     CalculateResultPrice calculateResultPrice;
-    @Mock
-    Shipment shipment;
-    @Mock
-    Price price;
-
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-//        calculateResultPrice = new CalculateResultPrice(shipment, distance, useCase);
-
     }
 
 
@@ -68,18 +60,10 @@ class CalculateControllerTest extends ControllerTest {
         when(useCase.calcByCubicMeter(any())).thenReturn(new Price(BigDecimal.valueOf(600), rub));
         when(useCase.minimalPrice()).thenReturn(new Price(BigDecimal.valueOf(350), rub));
         when(distance.getDistanceInKilometers()).thenReturn(new BigDecimal("1000"));
-//        when(price.getNewPrice(any())).thenReturn(new Price(new BigDecimal(10), rub));
-
-        Price resultTest = calculateResultPrice.getResulPrice();
-        System.out.println(resultTest);
-
         when(calculateResultPrice.getResulPrice()).thenReturn(new Price(new BigDecimal(3000), rub));
-        System.out.println(when(calculateResultPrice.getResulPrice()).thenReturn(new Price(new BigDecimal(10), rub)));
-
 
         ResponseEntity<CalculatePackagesResponse> response =
                 restTemplate.postForEntity(baseCalculateApi, request, CalculatePackagesResponse.class);
-        System.out.println(response.getBody().toString());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -87,7 +71,8 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Список упаковок == null -> Ответ 400")
     void whenEmptyListPackages_thenReturn400() {
-        var request = new CalculatePackagesRequest(null, "RUB", new Destination(new BigDecimal("56.330889"), new BigDecimal("44.002981")),
+        var request = new CalculatePackagesRequest(null, "RUB",
+                new Destination(new BigDecimal("56.330889"), new BigDecimal("44.002981")),
                 new Departure(new BigDecimal("55.752184"), new BigDecimal("37.608970")));
 
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);
@@ -98,7 +83,8 @@ class CalculateControllerTest extends ControllerTest {
     @Test
     @DisplayName("Координаты доставки == null -> ответ 400")
     void whenEmptyDestinationCoordinates_thenReturn400() {
-        CalculatePackagesRequest request = new CalculatePackagesRequest(List.of(new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB",
+        CalculatePackagesRequest request = new CalculatePackagesRequest(List.of(
+                new CargoPackage(BigInteger.TEN, BigInteger.TEN, BigInteger.TEN, BigInteger.TEN)), "RUB",
                 null,
                 new Departure(new BigDecimal("55.752184"), new BigDecimal("37.608970")));
         ResponseEntity<String> response = restTemplate.postForEntity(baseCalculateApi, request, String.class);

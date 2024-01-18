@@ -19,8 +19,10 @@ public record CalculatePackagesRequest(
         @NotNull
         String currencyCode,
         @Valid
+        @NotNull
         Destination destination,
         @Valid
+        @NotNull
         Departure departure
 
 
